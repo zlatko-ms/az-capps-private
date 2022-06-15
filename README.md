@@ -95,7 +95,7 @@ In order to deploy the demo project you'll need the following dependencies :
 
 We advise using a Linux shell or WSL on Windows as it was used to build the project. However any OS with the dependencies installed will work as well.
 
-If you have trouble installing GNU Make (i.e you are probably using a Windows shell), you can simply type the commands referenced in the [Makefile]((https://github.com/zlatko-ms/az-capps-private/blob/main/src/bicep/Makefile) for each rule. Just make sure to remove the @ prefix from each command line.
+If you have trouble installing GNU Make (i.e you are probably using a Windows shell), you can simply type the commands referenced in the [Makefile](https://github.com/zlatko-ms/az-capps-private/blob/main/src/bicep/Makefile) for each rule. Just make sure to remove the @ prefix from each command line.
 
 ### Deployement
 
