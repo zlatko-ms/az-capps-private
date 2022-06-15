@@ -67,7 +67,7 @@ The envrionnement is attached to the Log Analytics workspace by setting up the l
 
 In order to set up the DNS zone we'll need the VNet Id, the environnement domain as well as the environnement static IP assigned on creation time.
 
-The domain name is provided by the backend service application environnement as an [output](https://github.com/zlatko-ms/az-capps-private/blob/main/src/bicep/modules/caen.bicep#L44), assigned from [main.bicep](https://github.com/zlatko-ms/az-capps-private/blob/main/src/bicep/main.bicep#L95) and used in the dedicated [caenvdns.bicep](https://github.com/zlatko-ms/az-capps-private/blob/main/src/bicep/modules/caenvdns..bicep#L22) module.
+The domain name is provided by the backend service application environnement as an [output](https://github.com/zlatko-ms/az-capps-private/blob/main/src/bicep/modules/caenv.bicep#L44), assigned from [main.bicep](https://github.com/zlatko-ms/az-capps-private/blob/main/src/bicep/main.bicep#L95) and used in the dedicated [caenvdns.bicep](https://github.com/zlatko-ms/az-capps-private/blob/main/src/bicep/modules/caenvdns..bicep#L22) module.
 
 The static Ip is used to set up the wildcar A record in, assigned from [main.bicep](https://github.com/zlatko-ms/az-capps-private/blob/main/src/bicep/main.bicep#L96) and used in [caenvdns.bicep](https://github.com/zlatko-ms/az-capps-private/blob/main/src/bicep/modules/caenvdns.bicep#L48).
 
