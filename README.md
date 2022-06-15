@@ -170,7 +170,7 @@ You can then refine both queries using the [KQL language](https://docs.microsoft
 
 The **Metrics** tab will scope Azure Monitor to your application to provide a quick way of building your application monitoring dashboards.
 
-And if you're interessted by the underlying infrastructure implementation, take a look at your vnet and check the connected devices, you'll see the injected Kuberntes nodes and ILBs, wich can give you an indea on how the service is built.
+And if you're interessted by the underlying infrastructure implementation, take a look at your vnet and check the **Connected devices** entry of the created VNet, you'll see the injected Kuberntes nodes and ILBs, wich can give you an idea on how the service is built.
 
 ### Cleanup
 
