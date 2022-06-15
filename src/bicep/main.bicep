@@ -7,9 +7,9 @@ param stackName string = 'privatecapps'
 param stackLocation string = 'westeurope'
 
 var stackResourceGroupName  = stackName
-var stackVNetCIDR = '10.5.0.0/16'
 
-/** network infrastructure definition */
+// network infrastructure
+var stackVNetCIDR = '10.5.0.0/16'
 var stackVNetSubnets = [
   {
     name : 'subnet-base'

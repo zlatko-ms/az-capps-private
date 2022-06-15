@@ -30,7 +30,7 @@ resource caDnsVNet 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2018-0
   name: '${caEnvName}-vnet'
   location: caEnvDnsLocation
   properties: {
-    registrationEnabled: true
+    registrationEnabled: false
     virtualNetwork: {
       id: caEnvDnsVnetId
     }
