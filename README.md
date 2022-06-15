@@ -61,17 +61,17 @@ The container apps environnements are implemented in the [caenv.bicep](./src/bic
 
 The vnet injection is set up by providing the adequate subnet id to the environnement module as illustrated in the [main.bicep](https://github.com/zlatko-ms/az-capps-private/blob/main/src/bicep/main.bicep#L84) for the **caenv-backend**. A similar assignation is provided for the **caenv-client** environnement at [main.bicep](https://github.com/zlatko-ms/az-capps-private/blob/main/src/bicep/main.bicep#L114). The identifiers of the 
 
-The envrionnement is attached to the Log Analytics workspace by setting up the log analytics [clientid](./src/bicep/main.bicep:77) and [shared key](https://github.com/zlatko-ms/az-capps-private/blob/main/src/bicep/main.bicep#L78). For sake of "technical clarity" we used the output of the [law module](./src/bicep/modules/law.bicep) to get the keys. In a production environnement you should consider storing the secrets in a secured storage such an Azure Key Vault.
+The envrionnement is attached to the Log Analytics workspace by setting up the log analytics [clientid](./src/bicep/main.bicep#L77) and [shared key](https://github.com/zlatko-ms/az-capps-private/blob/main/src/bicep/main.bicep#L78). For sake of "technical clarity" we used the output of the [law module](./src/bicep/modules/law.bicep#L31-32) to get the keys. In a production environnement you should consider storing the secrets in a secured storage such an Azure Key Vault.
 
 ### Private DNS for Backend Service
 
 In order to set up the DNS zone we'll need the VNet Id, the environnement domain as well as the environnement static IP assigned on creation time.
 
-The domain name is provided by the backend service application environnement as an [output](https://github.com/zlatko-ms/az-capps-private/blob/main/src/bicep/modules/caen.bicep#L44), assigned from [main.bicep](https://github.com/zlatko-ms/az-capps-private/blob/main/src/bicep/main.bicep#L95) and used in the dedicated [caenvdns.bicep](https://github.com/zlatko-ms/az-capps-private/blob/main/src/bicep/modules/caenvdsn..bicep#L22) module.
+The domain name is provided by the backend service application environnement as an [output](https://github.com/zlatko-ms/az-capps-private/blob/main/src/bicep/modules/caen.bicep#L44), assigned from [main.bicep](https://github.com/zlatko-ms/az-capps-private/blob/main/src/bicep/main.bicep#L95) and used in the dedicated [caenvdns.bicep](https://github.com/zlatko-ms/az-capps-private/blob/main/src/bicep/modules/caenvdns..bicep#L22) module.
 
-The static Ip is used to set up the wildcar A record in, assigned from [main.bicep](https://github.com/zlatko-ms/az-capps-private/blob/main/src/bicep/main.bicep#L96) and used in [caenvdns.bicep](https://github.com/zlatko-ms/az-capps-private/blob/main/src/bicep/modules/caenvdsn.bicep#L48).
+The static Ip is used to set up the wildcar A record in, assigned from [main.bicep](https://github.com/zlatko-ms/az-capps-private/blob/main/src/bicep/main.bicep#L96) and used in [caenvdns.bicep](https://github.com/zlatko-ms/az-capps-private/blob/main/src/bicep/modules/caenvdns.bicep#L48).
 
-The VNet is provided as the output of the [vnet.bicep](https://github.com/zlatko-ms/az-capps-private/blob/main/src/bicep/modules/vnet.bicep#L44) module, assigned from [main.bicep](https://github.com/zlatko-ms/az-capps-private/blob/main/src/bicep/main.bicep#L97) and used in the [caenvdns.bicep](https://github.com/zlatko-ms/az-capps-private/blob/main/src/bicep/modules/caenvdsn.bicep#L35) module.
+The VNet is provided as the output of the [vnet.bicep](https://github.com/zlatko-ms/az-capps-private/blob/main/src/bicep/modules/vnet.bicep#L44) module, assigned from [main.bicep](https://github.com/zlatko-ms/az-capps-private/blob/main/src/bicep/main.bicep#L97) and used in the [caenvdns.bicep](https://github.com/zlatko-ms/az-capps-private/blob/main/src/bicep/modules/caenvdns.bicep#L35) module.
 
 ### Applications
 
