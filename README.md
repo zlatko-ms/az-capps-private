@@ -33,7 +33,7 @@ Note that hitting the ILB behind the ingress with the IP address will not work a
 
 Hence we need to set up a **private DNS zone** with a **wildcard ('*') A record** pointing to the environment ingress static IP. The wildcard is justified by the fact that a given environment can have several applications, each with its own ingress, served from the same Internal Load Balancer. 
 
-The final app flow routing will use the hostname which is expected to be the same as the application name (in our case helloer.<env>.<region>.azurecontaierapps.io)
+The final app flow routing will use the hostname which is expected to be the same as the application name (in our case helloer.envSystemName.region.azurecontaierapps.io ).
 
 ### Client service
 
@@ -167,6 +167,8 @@ ContainerAppConsoleLogs_CL
 You can then refine both queries using the [KQL language](https://docs.microsoft.com/en-us/azure/data-explorer/kql-quick-reference)
 
 The **Metrics** tab will scope Azure Monitor to your application to provide a quick way of building your application monitoring dashboards.
+
+And if you're interessted by the underlying infrastructure implementation, take a look at your vnet and check the connected devices, you'll see the injected Kuberntes nodes and ILBs, wich can give you an indea on how the service is built.
 
 ### Cleanup
 
