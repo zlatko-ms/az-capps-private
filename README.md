@@ -49,7 +49,7 @@ The code tree is classic, the [main.bicep](https://github.com/zlatko-ms/az-capps
 
 ### VNet Definition
 
-The network infrastructure is defined by the two variables located in [main.bicep](https://github.com/zlatko-ms/az-capps-private/blob/main/src/bicep/main.bicep#L12). If necessay update the ranges in order to fit your Azure environnement constraints.
+The network infrastructure is defined by the two variables located in [main.bicep](https://github.com/zlatko-ms/az-capps-private/blob/main/src/bicep/main.bicep#L12-L30). If necessay update the ranges in order to fit your Azure environnement constraints.
 
 The implementation of the VNet and underlying subnets is perfromed by the dedicated [vnet.bicep](https://github.com/zlatko-ms/az-capps-private/blob/main/src/bicep/modules/vnet.bicep) module.
 
@@ -132,6 +132,8 @@ If you are not in that situation, then you it *should* be possible to deploy it 
 ### Insights
 
 Once the deployement process is finished, start by taking a tour on the created resource group and you shoud see an output similar to the following : 
+
+![image](src/doc/resource-group-view.png)
 
 Then take a look at the *Log Stream* of the **Greeter** application, that should look similar to the following : 
 
