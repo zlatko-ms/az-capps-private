@@ -69,7 +69,7 @@ The Azure Key Vault is used to avoid sharing secrets between the biceps modules 
 In this demonstrator a single Log Analytics Workspace centralized all system and application logs related to the two application environments. You can use the KQL language to perform
 fine gran level queries to observe and troubleshoot your apps. You can also use it as a base for building monitoring and health dashboards.
 
-The LAW is deployed by the [law.bicep](https://github.com/zlatko-ms/az-capps-private/blob/main/src/bicep/modules/vnet.bicep) module. Note that the client shared key, a sensitive info, 
+The LAW is deployed by the [law.bicep](https://github.com/zlatko-ms/az-capps-private/blob/main/src/bicep/modules/law.bicep) module. Note that the client shared key, a sensitive info, 
 is stored directly in the [KV](https://github.com/zlatko-ms/az-capps-private/blob/main/src/bicep/modules/law.bicep#L43) and never stored on the deployment trace level. 
 
 ### Container Apps Environments
