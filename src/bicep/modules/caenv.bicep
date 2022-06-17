@@ -6,8 +6,10 @@ param caEnvLocation string = resourceGroup().location
 @description('environnement tags')
 param caEnvTags object = {}
 @description('environnement log analitics client id')
+@secure()
 param caEnvLawClientId string
 @description('environnement log analytics shared key')
+@secure()
 param caEnvLawSharedKey string
 @description('environnement infra subnet id')
 param caEnvVnetInfraSubnetId string
@@ -15,10 +17,14 @@ param caEnvVnetInfraSubnetId string
 param caEnvPrivate bool = true
 @description('set to true for zone redundant environnement')
 param caEnvZoneRedundant bool = false
+@description('name of th kv holidng secrets for connection to the log analytics')
+
 
 var tags = union(caEnvTags, { 
   Component: 'ContainerAppEnv'
  } )
+
+
 
 resource capps 'Microsoft.App/managedEnvironments@2022-03-01' = {
   name: caEnvName

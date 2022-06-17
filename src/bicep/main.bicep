@@ -8,6 +8,8 @@ param stackLocation string = 'westeurope'
 
 var stackResourceGroupName  = stackName
 
+var keyVaultName = '${stackName}-kvdeploysec'
+
 // network infrastructure
 var stackVNetCIDR = '10.5.0.0/16'
 var stackVNetSubnets = [
@@ -37,6 +39,9 @@ var stackTags = {
   Stream: 'Awareness'
 }
 
+var lawSharedKeySecretName = 'lawSharedKey'
+//var lawClientIdSecretName  = 'lawClientId'
+
 /** the resource group */
 resource rg 'Microsoft.Resources/resourceGroups@2021-01-01' = {
   name: stackResourceGroupName
@@ -57,7 +62,18 @@ module vnet './modules/vnet.bicep' = {
   } 
 }
 
-/** log analytics */
+// kv for storing deployement secrets
+module kv './modules/kv.bicep' = {
+  name: '${stackName}-kvdeploysec'
+  scope: resourceGroup(rg.name)
+  params: {
+    kvName: keyVaultName
+    kvLocation: rg.location
+  }
+}
+
+
+// log analytics 
 module law './modules/law.bicep' = {
   name: '${stackName}-law'
   scope: resourceGroup(rg.name)
@@ -65,17 +81,25 @@ module law './modules/law.bicep' = {
    lawTags: stackTags
    lawLocation: rg.location
    lawName: '${stackName}-law'
+   kvName: keyVaultName
+   kvClientSharedKeySecretName: lawSharedKeySecretName
   }
 }
 
-/** container apps env for the backend service*/
+// fetch the kv in order to get the Log Abalyics Shared Key
+resource infraSecretsKV 'Microsoft.KeyVault/vaults@2019-09-01' existing = {
+  scope: resourceGroup(rg.name)
+  name: keyVaultName
+}
+
+// container apps env for the backend service
 var caBackendName = 'caenv-backend'
 module cabackend './modules/caenv.bicep' = {
   name: '${stackName}-${caBackendName}'
   scope: resourceGroup(rg.name)
   params: {
     caEnvLawClientId: law.outputs.outputLawClientId
-    caEnvLawSharedKey: law.outputs.outputLawClientSecret
+    caEnvLawSharedKey: infraSecretsKV.getSecret(lawSharedKeySecretName)
     caEnvName: caBackendName
     caEnvLocation: rg.location
     caEnvPrivate: true
@@ -85,7 +109,8 @@ module cabackend './modules/caenv.bicep' = {
   }
 }
 
-/** private dns zone for the helloer environnement, required to hit the app */
+
+// private dns zone for the helloer environnement, required to hit the app
 module cabackendns './modules/caenvdns.bicep' = {
   name: '${stackName}-${caBackendName}-dns'
   scope: resourceGroup(rg.name)
@@ -98,14 +123,14 @@ module cabackendns './modules/caenvdns.bicep' = {
   }
 }
 
-/** container apps env for the greeter (client app illustration)*/
+// container apps env for the greeter (client app illustration)
 var caClientName = 'caenv-client'
 module caclient './modules/caenv.bicep' = {
   name: '${stackName}-${caClientName}'
   scope: resourceGroup(rg.name)
   params: {
     caEnvLawClientId: law.outputs.outputLawClientId
-    caEnvLawSharedKey: law.outputs.outputLawClientSecret
+    caEnvLawSharedKey: infraSecretsKV.getSecret(lawSharedKeySecretName)
     caEnvName: caClientName
     caEnvLocation: rg.location
     caEnvPrivate: true
@@ -115,7 +140,7 @@ module caclient './modules/caenv.bicep' = {
   }
 }
 
-/** the helloer app, will serve the http calls */
+// the helloer app, will serve the http calls 
 var backendAppName = 'helloer'
 module cahelloer './modules/ca.bicep' = {
   name: '${stackName}-ca-helloer'
@@ -180,7 +205,7 @@ module cahelloer './modules/ca.bicep' = {
   }
 }
 
-/** the greeter client app, will call the backend (helloer) on the follwing url  */
+// the greeter client app, will call the backend (helloer) on the follwing url 
 var helloerUrl = 'https://${backendAppName}.${cabackend.outputs.caEnvDefaultDomain}/connectivity/local'
 module cagreeter './modules/ca.bicep' = {
   name: '${stackName}-ca-greeter'
