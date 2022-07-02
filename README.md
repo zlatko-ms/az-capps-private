@@ -2,7 +2,7 @@
 
 ## Intro
 
-The Azure Container Apps is a new and quite interesting Azure providing a fully managed, ready to roll, serverless environment for your containerized applications.
+The Azure Container Apps is a new and quite interesting Azure service providing a fully managed, ready to roll, serverless environment for your containerized applications.
 
 By providing a fully managed solution the ACA removes all the operational dependencies on the Kubernetes (skills, learning curve, dedicated infra team) and let you focus on the essential, i.e your applications! 
 
