@@ -233,7 +233,7 @@ module cagreeter './modules/ca.bicep' = {
           }
           {
             name: 'GREET_SLEEP'
-            value: '10' 
+            value: '0.1' 
           }
 
         ]
