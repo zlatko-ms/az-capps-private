@@ -50,11 +50,11 @@ This Greeter application does not provide any ingress, so there is no need to se
 
 ## Code Walkthrough
 
-The source code tree is classic, the [main.bicep](https://github.com/zlatko-ms/az-capps-private/blob/main/src/bicep/main.bicep) provides the definitions of the demonstrator and relies on specific [modules](./src/bicep/modules/) to deploy the underlying infrastructure services.
+The source code tree is classic, the [main.bicep](https://github.com/zlatko-ms/az-capps-private/blob/main/src/main/infra/bicep.bicep) provides the definitions of the demonstrator and relies on specific [modules](./src/bicep/modules/) to deploy the underlying infrastructure services.
 
 ### VNet Definition
 
-The network infrastructure is defined in [main.bicep](https://github.com/zlatko-ms/az-capps-private/blob/main/src/bicep/main.bicep#L14-L30). If necessary update the ranges in order to fit your Azure environment constraints.
+The network infrastructure is defined in [main.bicep](https://github.com/zlatko-ms/az-capps-private/blob/main/src/main/infra/bicep.bicep#L14-L30). If necessary update the ranges in order to fit your Azure environment constraints.
 
 The implementation of the VNet and underlying subnets is performed by the dedicated [vnet.bicep](https://github.com/zlatko-ms/az-capps-private/blob/main/src/bicep/modules/vnet.bicep) module.
 
@@ -76,27 +76,27 @@ is stored directly in the [KV](https://github.com/zlatko-ms/az-capps-private/blo
 
 The container apps environments are implemented in the [caenv.bicep](./src/bicep/modules/caenv.bicep).
 
-The vnet injection is set up by providing the adequate subnet id to the environment module as illustrated in the [main.bicep](https://github.com/zlatko-ms/az-capps-private/blob/main/src/bicep/main.bicep#L84) for the **caenv-backend**. A similar assignation is provided for the **caenv-client** environment at [main.bicep](https://github.com/zlatko-ms/az-capps-private/blob/main/src/bicep/main.bicep#L114). The identifiers of the 
+The vnet injection is set up by providing the adequate subnet id to the environment module as illustrated in the [main.bicep](https://github.com/zlatko-ms/az-capps-private/blob/main/src/main/infra/bicep.bicep#L84) for the **caenv-backend**. A similar assignation is provided for the **caenv-client** environment at [main.bicep](https://github.com/zlatko-ms/az-capps-private/blob/main/src/main/infra/bicep.bicep#L114). The identifiers of the 
 
-The environment is attached to the Log Analytics workspace by setting up the log analytics [clientid](./src/bicep/main.bicep#L77) while the shared key is fetched from the [KV](https://github.com/zlatko-ms/az-capps-private/blob/main/src/bicep/main.bicep#L90-L93) before being injected in the environment via a secure [param](https://github.com/zlatko-ms/az-capps-private/blob/main/src/bicep/main.bicep#L102).
+The environment is attached to the Log Analytics workspace by setting up the log analytics [clientid](./src/main/infra/bicep.bicep#L77) while the shared key is fetched from the [KV](https://github.com/zlatko-ms/az-capps-private/blob/main/src/main/infra/bicep.bicep#L90-L93) before being injected in the environment via a secure [param](https://github.com/zlatko-ms/az-capps-private/blob/main/src/main/infra/bicep.bicep#L102).
 
 ### Private DNS for Backend Service
 
 In order to set up the DNS zone we'll need the VNet Id, the environment domain as well as the environment static IP assigned on creation time.
 
-The domain name is provided by the backend service application environment as an [output](https://github.com/zlatko-ms/az-capps-private/blob/main/src/bicep/modules/caenv.bicep#L44) of the dedicated env module, assigned from [main.bicep](https://github.com/zlatko-ms/az-capps-private/blob/main/src/bicep/main.bicep#L95) and used in the dedicated [caenvdns.bicep](https://github.com/zlatko-ms/az-capps-private/blob/main/src/bicep/modules/caenvdns..bicep#L22) module.
+The domain name is provided by the backend service application environment as an [output](https://github.com/zlatko-ms/az-capps-private/blob/main/src/bicep/modules/caenv.bicep#L44) of the dedicated env module, assigned from [main.bicep](https://github.com/zlatko-ms/az-capps-private/blob/main/src/main/infra/bicep.bicep#L95) and used in the dedicated [caenvdns.bicep](https://github.com/zlatko-ms/az-capps-private/blob/main/src/bicep/modules/caenvdns..bicep#L22) module.
 
-The static Ip is used to set up the wildcard A record in, assigned from [main.bicep](https://github.com/zlatko-ms/az-capps-private/blob/main/src/bicep/main.bicep#L96) and used in [caenvdns.bicep](https://github.com/zlatko-ms/az-capps-private/blob/main/src/bicep/modules/caenvdns.bicep#L48).
+The static Ip is used to set up the wildcard A record in, assigned from [main.bicep](https://github.com/zlatko-ms/az-capps-private/blob/main/src/main/infra/bicep.bicep#L96) and used in [caenvdns.bicep](https://github.com/zlatko-ms/az-capps-private/blob/main/src/bicep/modules/caenvdns.bicep#L48).
 
-The VNet is provided as the output of the [vnet.bicep](https://github.com/zlatko-ms/az-capps-private/blob/main/src/bicep/modules/vnet.bicep#L44) module, assigned from [main.bicep](https://github.com/zlatko-ms/az-capps-private/blob/main/src/bicep/main.bicep#L97) and used in the [caenvdns.bicep](https://github.com/zlatko-ms/az-capps-private/blob/main/src/bicep/modules/caenvdns.bicep#L35) module.
+The VNet is provided as the output of the [vnet.bicep](https://github.com/zlatko-ms/az-capps-private/blob/main/src/bicep/modules/vnet.bicep#L44) module, assigned from [main.bicep](https://github.com/zlatko-ms/az-capps-private/blob/main/src/main/infra/bicep.bicep#L97) and used in the [caenvdns.bicep](https://github.com/zlatko-ms/az-capps-private/blob/main/src/bicep/modules/caenvdns.bicep#L35) module.
 
 ### Applications
 
-The Container Apps are defined in [main.bicep](https://github.com/zlatko-ms/az-capps-private/blob/main/src/bicep/main.bicep#L118-L220) and realized by the dedicated [ca.bicep](https://github.com/zlatko-ms/az-capps-private/blob/main/src/bicep/modules/ca.bicep) module.
+The Container Apps are defined in [main.bicep](https://github.com/zlatko-ms/az-capps-private/blob/main/src/main/infra/bicep.bicep#L118-L220) and realized by the dedicated [ca.bicep](https://github.com/zlatko-ms/az-capps-private/blob/main/src/bicep/modules/ca.bicep) module.
 
-The **helloer** application ingress definition can be found in [main.bicep](https://github.com/zlatko-ms/az-capps-private/blob/main/src/bicep/main.bicep#L130) while the **greeter** has no ingress.
+The **helloer** application ingress definition can be found in [main.bicep](https://github.com/zlatko-ms/az-capps-private/blob/main/src/main/infra/bicep.bicep#L130) while the **greeter** has no ingress.
 
-The **greeter** application requires the URL to hit to be provided as a GREETER_URL environment variable. The value of the url is computed at [main.bicep](https://github.com/zlatko-ms/az-capps-private/blob/main/src/bicep/main.bicep#L184) and assigned at [main.bicep](https://github.com/zlatko-ms/az-capps-private/blob/main/src/bicep/main.bicep#L207)
+The **greeter** application requires the URL to hit to be provided as a GREETER_URL environment variable. The value of the url is computed at [main.bicep](https://github.com/zlatko-ms/az-capps-private/blob/main/src/main/infra/bicep.bicep#L184) and assigned at [main.bicep](https://github.com/zlatko-ms/az-capps-private/blob/main/src/main/infra/bicep.bicep#L207)
 
 ## Usage
 
@@ -141,8 +141,8 @@ The scope of the bicep project is the subscription and therefore requires the us
 
 If you are not in that situation, then you it *should* be possible to deploy it on a resource group level by : 
 
-* changing the targetScope to 'resourceGroup' in the [main.bicep](https://github.com/zlatko-ms/az-capps-private/blob/main/src/bicep/main.bicep#L1)
-* commenting the resource group creation from [main.bicep](https://github.com/zlatko-ms/az-capps-private/blob/main/src/bicep/main.bicep#L40-L45)
+* changing the targetScope to 'resourceGroup' in the [main.bicep](https://github.com/zlatko-ms/az-capps-private/blob/main/src/main/infra/bicep.bicep#L1)
+* commenting the resource group creation from [main.bicep](https://github.com/zlatko-ms/az-capps-private/blob/main/src/main/infra/bicep.bicep#L40-L45)
 * changing the command lines in the [Makefile](https://github.com/zlatko-ms/az-capps-private/blob/main/src/bicep/Makefile) to deploy on an existing resource with the help of this [doc](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/deploy-to-resource-group)
 
 ### Insights
