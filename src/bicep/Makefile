@@ -10,4 +10,4 @@ clean:
 	@az group delete --resource-group $(stackName) --yes
 
 test:
-	@az containerapp logs show -n helloer -g privatecapps
+	@az containerapp logs show -n helloer -g $(stackName)
