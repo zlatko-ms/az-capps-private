@@ -87,7 +87,7 @@ module law './modules/law.bicep' = {
   }
 }
 
-// fetch the kv in order to get the Log Abalyics Shared Key
+// fetch the kv in order to get the Log Analytics Shared Key
 resource infraSecretsKV 'Microsoft.KeyVault/vaults@2019-09-01' existing = {
   scope: resourceGroup(rg.name)
   name: keyVaultName
