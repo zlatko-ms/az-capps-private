@@ -1,14 +1,15 @@
 targetScope = 'subscription'
 
+@description('resource group name, will set the destination of the whole stack')
+param rgName string= 'rgprivatecapps'
+
 @description('stack name, will prefix all the ressource deployement names and will be available in all tags')
 param stackName string = 'privatecapps'
 
 @description('stack location')
 param stackLocation string = 'westeurope'
 
-var stackResourceGroupName  = stackName
-
-var keyVaultName = '${stackName}-kvdeploysec'
+var keyVaultName = 'kv-${stackName}'
 
 // network infrastructure
 var stackVNetCIDR = '10.5.0.0/16'
@@ -44,7 +45,7 @@ var lawSharedKeySecretName = 'lawSharedKey'
 
 /** the resource group */
 resource rg 'Microsoft.Resources/resourceGroups@2021-01-01' = {
-  name: stackResourceGroupName
+  name: rgName
   location: stackLocation
   tags: stackTags
 }
@@ -64,7 +65,7 @@ module vnet './modules/vnet.bicep' = {
 
 // kv for storing deployement secrets
 module kv './modules/kv.bicep' = {
-  name: '${stackName}-kvdeploysec'
+  name: keyVaultName
   scope: resourceGroup(rg.name)
   params: {
     kvName: keyVaultName
