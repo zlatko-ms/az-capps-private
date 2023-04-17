@@ -107,12 +107,11 @@ In order to deploy the demo project you'll need the following dependencies:
 * [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-linux)
 * [Azure CLI Bicep extension](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/install) 
 * GNU Make
-* Perl ( for RG scoped deployement )
+* [Perl](https://www.perl.org/get.html) ( for Resource Group scoped deployement )
 * GitHub project clone
 
 We advise using a **Linux shell or WSL** on Windows as it was used to build the project. However, any OS with the dependencies installed will work as well.
 
-If you have trouble installing GNU Make (i.e you are probably using a Windows shell), you can simply type the commands referenced in the [Makefile](https://github.com/zlatko-ms/az-capps-private/blob/main/src/bicep/Makefile) for each rule. Just make sure to remove the @ prefix from each command line.
 
 ### Deployment
 
@@ -120,8 +119,7 @@ This demo covers the following deployement use cases :
 
 * deploying to a subscription on which you have a Contributor role 
 * deploying to a resource group on which you have the Contributor role 
-
-The first use case is probably the most widely used in the Digital Natives world, while there are chances you'll fall into the second category if you are part of a large Enterprise.
+ 
 
 #### Login
 
@@ -139,14 +137,14 @@ In this context, the automation will create the resource group and deploy the re
 
 ```bash 
 cd src/bicep
-make deploy-sub
+make deploy
 ```
 
 If you want to customize the location or the resource group name you can use the following: 
 
 ```bash 
 cd src/bicep
-make rgName=<myRGName> location=<myAzureRegion>
+make deploy rgName=<myRGName> location=<myAzureRegion>
 ```
 
 ##### Cleanup
@@ -155,14 +153,14 @@ The cleanup will delete the created resource groups with all contained resouces 
 
 ```bash 
 cd src/bicep
-make clean-sub
+make clean
 ```
 
 If you have customized the resource group name, please make sure that you pass it along with the arguments : 
 
 ```bash 
 cd src/bicep
-make clean-sub rgName=<myRGName>
+make clean rgName=<myRGName>
 ```
 
 #### Deploy on Resource Group
@@ -186,7 +184,6 @@ In order to clean the demo resources simply use the following :
 cd src/bicep
 make clean-rg rgName=<myRGName>
 ```
-
 
 ### Insights
 

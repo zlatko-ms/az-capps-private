@@ -3,7 +3,9 @@ rgName = rgprivatecapps
 location = westeurope
 RESIDS = "none"
 
-default: deploy-sub
+default: deploy
+deploy : deploy-sub
+clean : clean-sub
 
 deploy-rg:  
 	@echo "[*] deploying to resource group $(rgName) ..."
@@ -17,7 +19,7 @@ deploy-sub:
 
 clean-sub:
 	@echo "[*] deleting resource group $(rgName), this might take a while ..."
-	@az group delete --resource-group $(stackName) --yes
+	@az group delete --resource-group $(rgName) --yes
 	
 rg.resource.list:
 	@az resource list --tag Stack=$(stackName) | jq -r '.[] | select (.resourceGroup=="$(rgName)") | .id' | tr '\n' ' ' > rg.resource.list
