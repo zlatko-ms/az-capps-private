@@ -167,7 +167,7 @@ module caclient './modules/caenv.bicep' = {
 }
 
 /** Helloer app, will serve the http calls */
-var backendAppName = 'helloer'
+var backendAppName = '${stackName}-helloer'
 module cahelloer './modules/ca.bicep' = {
   name: '${stackName}-ca-helloer'
   //SUBSTART
@@ -206,7 +206,7 @@ module cahelloer './modules/ca.bicep' = {
           }
           {
             name: 'HELLOER_BACKEND_TYPE'
-            value: 'helloer'
+            value: backendAppName
           }
 
         ]
@@ -241,7 +241,7 @@ module cagreeter './modules/ca.bicep' = {
   scope: resourceGroup(rg.name)
   //SUBEND
   params: {
-    caAppName: 'greeter'
+    caAppName: '${stackName}-greeter'
     caAppTags: stackTags
     caAppMinReplicas: 1
     caAppMaxReplicas: 1
@@ -251,7 +251,7 @@ module cagreeter './modules/ca.bicep' = {
     caAppContainers: [
       {
         image: 'docker.io/zlatkoa/pgreeter:1.0.2'
-        name: 'greeter'
+        name: '${stackName}-greeter'
         resources: {
           cpu: 1
           memory: '2.0Gi'

@@ -1,7 +1,8 @@
 stackName = privatecapps
 rgName = rgprivatecapps
 location = westeurope
-RESIDS = "none"
+# RESIDS = $(shell az resource list --tag Stack=$(stackName) | jq -r '.[] | select (.resourceGroup=="$(rgName)") | .id' | tr '\n' ' ')
+RESIDS = $(shell az resource list --tag Stack=$(stackName) | jq -r '.[] | select (.resourceGroup=="$(rgName)")| .id' | tr '\n' ' ')
 
 default: deploy
 deploy : deploy-sub
@@ -22,10 +23,17 @@ clean-sub:
 	@az group delete --resource-group $(rgName) --yes
 	
 rg.resource.list:
-	@az resource list --tag Stack=$(stackName) | jq -r '.[] | select (.resourceGroup=="$(rgName)") | .id' | tr '\n' ' ' > rg.resource.list
+	@az resource list --tag Stack="$(stackName)" | jq -r '.[] | select (.resourceGroup=="$(rgName)") | .id' | tr '\n' ' ' > rg.resource.list
 
-clean-rg: rg.resource.list
+clean-test: 
+	@echo $(RESIDS-TEST)
+
+clean-rg-test:
 	@echo "[*] cleaning created resources from resource group $(rgName), this might take a while ..."
-	@$(eval RESIDS=$(shell cat rg.resource.list))
-	@az resource delete d--ids $(RESIDS)
-	@rm -f rg.resource.list
+	@az resource delete --ids $(RESIDS) --verbose
+
+# clean-rg: rg.resource.list
+# 	@echo "[*] cleaning created resources from resource group $(rgName), this might take a while ..."
+# 	@$(eval RESIDS=$(shell cat rg.resource.list))
+# 	@az resource delete --ids $(RESIDS)
+# 	@rm -f rg.resource.list
