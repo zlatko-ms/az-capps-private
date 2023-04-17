@@ -1,4 +1,16 @@
+// 
+// DO NOT REMOVE SUBSTART / SUBEND comments from the source code !!!
+// Those comments are used to descope from subscription to resource group
+//
+
+//SUBSTART
 targetScope = 'subscription'
+//SUBEND
+
+//SUBSTART
+@description('resource group name, will set the destination of the whole stack')
+param rgName string = 'rgprivatecapps'
+//SUBEND
 
 @description('stack name, will prefix all the ressource deployement names and will be available in all tags')
 param stackName string = 'privatecapps'
@@ -6,28 +18,26 @@ param stackName string = 'privatecapps'
 @description('stack location')
 param stackLocation string = 'westeurope'
 
-var stackResourceGroupName  = stackName
-
-var keyVaultName = '${stackName}-kvdeploysec'
+var keyVaultName = 'kv-${stackName}'
 
 // network infrastructure
 var stackVNetCIDR = '10.5.0.0/16'
 var stackVNetSubnets = [
   {
-    name : 'subnet-base'
-    prefix : '10.5.0.0/20'
+    name: 'subnet-base'
+    prefix: '10.5.0.0/20'
   }
   {
-    name : 'subnet-jump'
-    prefix : '10.5.16.0/20'
+    name: 'subnet-jump'
+    prefix: '10.5.16.0/20'
   }
   {
     name: 'subnet-caenv-infra-backend'
     prefix: '10.5.32.0/20'
   }
   {
-     name: 'subnet-caenv-infra-client'
-     prefix: '10.5.64.0/20'
+    name: 'subnet-caenv-infra-client'
+    prefix: '10.5.64.0/20'
   }
 ]
 
@@ -43,65 +53,78 @@ var lawSharedKeySecretName = 'lawSharedKey'
 //var lawClientIdSecretName  = 'lawClientId'
 
 /** the resource group */
+//SUBSTART
 resource rg 'Microsoft.Resources/resourceGroups@2021-01-01' = {
-  name: stackResourceGroupName
+  name: rgName
   location: stackLocation
   tags: stackTags
 }
+//SUBEND
 
 /** vnet infra */
 module vnet './modules/vnet.bicep' = {
   name: '${stackName}-vnet'
+  //SUBSTART
   scope: resourceGroup(rg.name)
-  params: {    
+  //SUBEND
+  params: {
     vnetName: '${stackName}-vnet'
     vnetPrefix: stackVNetCIDR
     vnetSubnets: stackVNetSubnets
-    vNetTags : stackTags
-    vNetLocation: rg.location
-  } 
+    vNetTags: stackTags
+    vNetLocation: stackLocation
+  }
 }
 
-// kv for storing deployement secrets
+/** kv for storing deployement secrets */
 module kv './modules/kv.bicep' = {
-  name: '${stackName}-kvdeploysec'
+  name: keyVaultName
+  //SUBSTART
   scope: resourceGroup(rg.name)
+  //SUBEND
   params: {
     kvName: keyVaultName
-    kvLocation: rg.location
+    kvLocation: stackLocation
+    kvTags: stackTags
   }
+
 }
 
-
-// log analytics 
+/** log analytics workspace */
 module law './modules/law.bicep' = {
   name: '${stackName}-law'
+  //SUBSTART
   scope: resourceGroup(rg.name)
+  //SUBEND
   params: {
-   lawTags: stackTags
-   lawLocation: rg.location
-   lawName: '${stackName}-law'
-   kvName: keyVaultName
-   kvClientSharedKeySecretName: lawSharedKeySecretName
+    lawTags: stackTags
+    lawLocation: stackLocation
+    lawName: '${stackName}-law'
+    kvName: keyVaultName
+    kvClientSharedKeySecretName: lawSharedKeySecretName
   }
 }
 
-// fetch the kv in order to get the Log Abalyics Shared Key
+/** fetch the kv in order to get the Log Analytics Shared Key */
 resource infraSecretsKV 'Microsoft.KeyVault/vaults@2019-09-01' existing = {
+  //SUBSTART
   scope: resourceGroup(rg.name)
+  //SUBEND
   name: keyVaultName
 }
 
-// container apps env for the backend service
+/** ACA env for the backend service */
 var caBackendName = 'caenv-backend'
 module cabackend './modules/caenv.bicep' = {
   name: '${stackName}-${caBackendName}'
+  //SUBSTART
   scope: resourceGroup(rg.name)
+  //SUBEND
   params: {
     caEnvLawClientId: law.outputs.outputLawClientId
     caEnvLawSharedKey: infraSecretsKV.getSecret(lawSharedKeySecretName)
     caEnvName: caBackendName
-    caEnvLocation: rg.location
+    caEnvLocation: stackLocation
     caEnvPrivate: true
     caEnvZoneRedundant: false
     caEnvTags: stackTags
@@ -109,11 +132,12 @@ module cabackend './modules/caenv.bicep' = {
   }
 }
 
-
-// private dns zone for the helloer environnement, required to hit the app
+/** Private DNS zone for the helloer environnement, required to hit the app */
 module cabackendns './modules/caenvdns.bicep' = {
   name: '${stackName}-${caBackendName}-dns'
+  //SUBSTART
   scope: resourceGroup(rg.name)
+  //SUBEND
   params: {
     caEnvName: caBackendName
     caEnvDnsTags: stackTags
@@ -123,16 +147,18 @@ module cabackendns './modules/caenvdns.bicep' = {
   }
 }
 
-// container apps env for the greeter (client app illustration)
+/** ACA env for the greeter (client app illustration) */
 var caClientName = 'caenv-client'
 module caclient './modules/caenv.bicep' = {
   name: '${stackName}-${caClientName}'
+  //SUBSTART
   scope: resourceGroup(rg.name)
+  //SUBEND
   params: {
     caEnvLawClientId: law.outputs.outputLawClientId
     caEnvLawSharedKey: infraSecretsKV.getSecret(lawSharedKeySecretName)
     caEnvName: caClientName
-    caEnvLocation: rg.location
+    caEnvLocation: stackLocation
     caEnvPrivate: true
     caEnvZoneRedundant: false
     caEnvTags: stackTags
@@ -140,17 +166,19 @@ module caclient './modules/caenv.bicep' = {
   }
 }
 
-// the helloer app, will serve the http calls 
+/** Helloer app, will serve the http calls */
 var backendAppName = 'helloer'
 module cahelloer './modules/ca.bicep' = {
   name: '${stackName}-ca-helloer'
+  //SUBSTART
   scope: resourceGroup(rg.name)
+  //SUBEND
   params: {
     caAppName: backendAppName
     caAppTags: stackTags
     caAppMinReplicas: 1
     caAppMaxReplicas: 1
-    caAppEnvLocation: rg.location
+    caAppEnvLocation: stackLocation
     caAppManagedEnvironmentId: cabackend.outputs.caEnvId
     caAppIngress: {
       allowInsecure: true
@@ -178,7 +206,7 @@ module cahelloer './modules/ca.bicep' = {
           }
           {
             name: 'HELLOER_BACKEND_TYPE'
-            value: 'helloer' 
+            value: 'helloer'
           }
 
         ]
@@ -205,19 +233,21 @@ module cahelloer './modules/ca.bicep' = {
   }
 }
 
-// the greeter client app, will call the backend (helloer) on the follwing url 
+/** Greeter client app, will call the backend (helloer) on the follwing url  */
 var helloerUrl = 'https://${backendAppName}.${cabackend.outputs.caEnvDefaultDomain}/connectivity/local'
 module cagreeter './modules/ca.bicep' = {
   name: '${stackName}-ca-greeter'
+  //SUBSTART
   scope: resourceGroup(rg.name)
+  //SUBEND
   params: {
     caAppName: 'greeter'
     caAppTags: stackTags
     caAppMinReplicas: 1
     caAppMaxReplicas: 1
-    caAppEnvLocation: rg.location
+    caAppEnvLocation: stackLocation
     caAppManagedEnvironmentId: caclient.outputs.caEnvId
-    caAppIngress: {} 
+    caAppIngress: {}
     caAppContainers: [
       {
         image: 'docker.io/zlatkoa/pgreeter:1.0.2'
@@ -233,7 +263,7 @@ module cagreeter './modules/ca.bicep' = {
           }
           {
             name: 'GREET_SLEEP'
-            value: '10' 
+            value: '10'
           }
 
         ]
