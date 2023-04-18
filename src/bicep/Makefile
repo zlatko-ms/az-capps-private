@@ -9,8 +9,8 @@ RESIDS = $(shell az resource list --tag Stack=$(stackName) | jq -r '.[] | select
 rgExists= $(shell (az group exists -g $(rgName)) ||( echo "false" ))	
 
 default: deploy
-deploy : deploy-rg
-clean : clean-rg
+deploy : deploy-sub
+clean : clean-sub
 
 deploy-sub:
 	@echo "[*] deploying to subscription in an existing or newly created resource group $(rgName) ..."
