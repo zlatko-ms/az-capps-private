@@ -107,7 +107,6 @@ In order to deploy the demo project you'll need the following dependencies:
 * [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-linux)
 * [Azure CLI Bicep extension](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/install) 
 * GNU Make
-* [Perl](https://www.perl.org/get.html) ( for Resource Group scoped deployement )
 * GitHub project clone
 
 We advise using a **Linux shell or WSL** on Windows as it was used to build the project. However, any OS with the dependencies installed will work as well.
@@ -115,74 +114,59 @@ We advise using a **Linux shell or WSL** on Windows as it was used to build the 
 
 ### Deployment
 
-This demo covers the following deployement use cases : 
+The demo supports the following deployement use cases : 
 
-* deploying to a subscription on which you have a Contributor role 
-* deploying to a resource group on which you have the Contributor role 
- 
+* deploy as a subscription level Contributor
+* deploy as a resource group level Contributor
+
+In the second use case, you'll have to specify an existing resource group on which you have the Contributor role.
 
 #### Login
 
-For both cases , start by connecting to azure from the command line: 
+Start by connecting to azure from the command line: 
 
 ```bash 
 az login
 ```
 
-#### Deploy on Subscription
+#### Deploy 
 
-##### Deploy 
-
-In this context, the automation will create the resource group and deploy the ressources required for demo. 
+If you are a subscription Contributor and have the necessary RBACs to create a resource group you can simply issue the following command : 
 
 ```bash 
-cd src/bicep
-make deploy
+make 
+```
+If you need to target a specific resource group beacause your Contributor privileges are limited to that scope, then you'll have to provide the name of the resource group : 
+
+```bash 
+make rgName=<myRGName> 
 ```
 
-If you want to customize the location or the resource group name you can use the following: 
+You can also override the default location of the demo resources by indicating, for instance : 
 
 ```bash 
-cd src/bicep
-make deploy rgName=<myRGName> location=<myAzureRegion>
+make rgName=<myRGName> location=<azureRegionName> 
 ```
 
-##### Cleanup
+#### Cleanup
 
-The cleanup will delete the created resource groups with all contained resouces : 
+The cleanup will delete all the provisionned Azure resources excepted the resource group itself.
+
+In order to clean up the demo resources simply issue : 
 
 ```bash 
-cd src/bicep
 make clean
 ```
-
-If you have customized the resource group name, please make sure that you pass it along with the arguments : 
+If you have overriden the resource group name **do not forget to** specify the resource group name on the command line : 
 
 ```bash 
-cd src/bicep
-make clean rgName=<myRGName>
+make clean rgName=<myRGName> 
 ```
 
-#### Deploy on Resource Group
-
-##### Deploy 
-
-You'll have to specify which RG you are targeting and to use a specifc make rule : 
+If you'd like to delete the resource group that was created for the demo simply issue the following command line : 
 
 ```bash 
-cd src/bicep
-make deploy-rg rgName=<myRGName>
-```
-
-##### Cleanup
-
-The cleanup will look for all resources that have a certain tag within the resource group in order to delete them, so it **should** be safe to use it even if your RG contains other resources then the one from the demo.
-
-In order to clean the demo resources simply use the following : 
-
-```bash 
-cd src/bicep
-make clean-rg rgName=<myRGName>
+az group delete --resource-group <myRGName> --yes
 ```
 
 ### Insights
