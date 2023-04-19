@@ -119,7 +119,7 @@ The demo supports the following deployement use cases :
 * deploy as a subscription level Contributor
 * deploy as a resource group level Contributor
 
-In the second use case, you'll have to specify an existing resource group on which you have the Contributor role.
+For the second use case, you'll have to specify an existing resource group on which you have the Contributor role.
 
 #### Login
 
@@ -131,17 +131,17 @@ az login
 
 #### Deploy 
 
-If you are a subscription Contributor and have the necessary RBACs to create a resource group you can simply issue the following command : 
+If you are a subscription Contributor and have the necessary RBACs to create a resource group you can simply issue the following command in order to use the default demo resource group name :  
 
 ```bash 
 make 
 ```
-If you need to target a specific resource group beacause your Contributor privileges are limited to that scope, then you'll have to provide the name of the resource group : 
+
+If you'd like to override the resource group name, or to deploy the resources on an already existing resource group on which you have the Contributor role, then specify the name or the group on the command line : 
 
 ```bash 
 make rgName=<myRGName> 
 ```
-
 You can also override the default location of the demo resources by indicating, for instance : 
 
 ```bash 
@@ -150,24 +150,45 @@ make rgName=<myRGName> location=<azureRegionName>
 
 #### Cleanup
 
-The cleanup will delete all the provisionned Azure resources excepted the resource group itself.
+The cleanup will delete all the provisionned Azure resources but will *not delete the resource group itself*, in order to comply to the deployment use cases. 
 
 In order to clean up the demo resources simply issue : 
 
 ```bash 
 make clean
 ```
+
 If you have overriden the resource group name **do not forget to** specify the resource group name on the command line : 
 
 ```bash 
 make clean rgName=<myRGName> 
 ```
 
-If you'd like to delete the resource group that was created for the demo simply issue the following command line : 
+If you'd like to delete the resources along with the resource group that was created for the demo, and have the necesary privleges to do so, simply execute : 
 
 ```bash 
-az group delete --resource-group <myRGName> --yes
+make clean-all
 ```
+
+If you have overriden the resource group name then add it to the parmeters : 
+
+```bash 
+make clean-all rgName=<myRGName> 
+```
+
+And if you'd like to clean both resources and the ressource group, and have the necessary privileges to perfom those operations, you can simply issue the following : 
+
+```bash 
+make clean clean-rg rgName=<myRGName> 
+```
+#### Troubleshooting
+
+In case the deployement or cleanup operations fail, you can check the details from the following log files : 
+
+* deploy.log.json : contains the json output of the bicep IAC 
+* clean.log.json : contains the json output of the resource deletion CLI
+
+In case you encoutner an error, we encourage you to retry the operation as some services might have a very temporary capacity issue on a particular region.
 
 ### Insights
 
