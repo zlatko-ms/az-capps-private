@@ -1,6 +1,6 @@
 rgName = rgprivatecapps
 location = westeurope
-stackName = privatecapps
+stackName = acapdemo
 
 # fetches resource ids of the demo level provisionned resources, used for resource cleanup
 RESIDS = $(shell az resource list --tag ResLocator=MSFT_ACA_PRIVATE_DEMO | jq -r '.[] | select (.resourceGroup=="$(rgName)")| .id' | tr '\n' ' ')

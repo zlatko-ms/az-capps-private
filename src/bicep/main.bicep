@@ -1,7 +1,9 @@
 targetScope = 'resourceGroup'
 
+@minLength(4)
+@maxLength(8)
 @description('stack name, will prefix all the ressource deployement names and will be available in all tags')
-param stackName string = 'privatecapps'
+param stackName string = 'acapdemo'
 
 @description('stack location')
 param stackLocation string = 'westeurope'
