@@ -1,4 +1,4 @@
-rgName = rgprivatecapps
+rgName = rgprivatecappsdemo
 location = westeurope
 stackName = acapdemo
 
@@ -12,7 +12,6 @@ define log-message
 endef
 
 default: deploy
-
 deploy: deploy-resources
 clean: clean-resources clean-log-files
 clean-all: clean-resources clean-rg clean-log-files
