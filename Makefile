@@ -1,4 +1,4 @@
-rgName = rgprivatecappsjuju
+rgName = rgprivatecappsdemo
 location = westeurope
 stackName = privatecapps
 

@@ -26,7 +26,3 @@ resource law 'Microsoft.OperationalInsights/workspaces@2022-10-01' = {
     }
   })
 }
-
-// outputs
-output outputLawClientId string = law.properties.customerId
-output outputLawWorkspaceName string= lawName

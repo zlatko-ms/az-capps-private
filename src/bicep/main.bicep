@@ -51,13 +51,15 @@ module vnet './modules/vnet.bicep' = {
   }
 }
 
+var lawName = '${stackName}-law'
+
 // log analytics workspace
 module law './modules/law.bicep' = {
-  name: '${stackName}-law'
+  name: lawName
   params: {
     lawTags: stackTags
     lawLocation: stackLocation
-    lawName: '${stackName}-law'
+    lawName: lawName
   }
 }
 
@@ -66,7 +68,7 @@ var caBackendName = '${stackName}-caenv-backend'
 module cabackend './modules/caenv.bicep' = {
   name: caBackendName
   params: {
-    caEnvLawName:'${stackName}-law'
+    caEnvLawName:lawName
     caEnvName: caBackendName
     caEnvLocation: stackLocation
     caEnvPrivate: true
@@ -93,7 +95,7 @@ var caClientName = '${lowerStackName}-caenv-client'
 module caclient './modules/caenv.bicep' = {
   name: caClientName
   params: {
-    caEnvLawName:'${stackName}-law'
+    caEnvLawName:lawName
     caEnvName: caClientName
     caEnvLocation: stackLocation
     caEnvPrivate: true
