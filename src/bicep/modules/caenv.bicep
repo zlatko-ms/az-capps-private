@@ -5,12 +5,8 @@ param caEnvName string
 param caEnvLocation string = resourceGroup().location
 @description('environnement tags')
 param caEnvTags object = {}
-@description('environnement log analitics client id')
-@secure()
-param caEnvLawClientId string
-@description('environnement log analytics shared key')
-@secure()
-param caEnvLawSharedKey string
+@description('environnement log analytics name')
+param caEnvLawName string
 @description('environnement infra subnet id')
 param caEnvVnetInfraSubnetId string
 @description('set to true if the environnement is private, i.e vnet injected')
@@ -24,7 +20,10 @@ var tags = union(caEnvTags, {
   Component: 'ContainerAppEnv'
  } )
 
-
+ //fetch the law in order to get the primary shared key below to avoid secret output 
+resource law 'Microsoft.OperationalInsights/workspaces@2022-10-01' existing = {
+  name: caEnvLawName
+}
 
 resource capps 'Microsoft.App/managedEnvironments@2022-03-01' = {
   name: caEnvName
@@ -34,8 +33,8 @@ resource capps 'Microsoft.App/managedEnvironments@2022-03-01' = {
     appLogsConfiguration: {
       destination: 'log-analytics'
       logAnalyticsConfiguration: {
-        customerId: caEnvLawClientId
-        sharedKey: caEnvLawSharedKey
+        customerId: law.properties.customerId
+        sharedKey: law.listKeys().primarySharedKey
       }
     }
     vnetConfiguration: {

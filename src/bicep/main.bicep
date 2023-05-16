@@ -6,10 +6,8 @@ param stackName string = 'privatecapps'
 @description('stack location')
 param stackLocation string = 'westeurope'
 
-// process params to overcome some naming limitations 
-var keyVaultName = 'kv-${stackName}'
+// process params to overcome some naming constraints 
 var lowerStackName = toLower(stackName)
-var lawSharedKeySecretName = 'lawSharedKey'
 
 // network infrastructure definition, if required update to fit your CIDR
 var stackVNetCIDR = '10.5.0.0/16'
@@ -53,17 +51,6 @@ module vnet './modules/vnet.bicep' = {
   }
 }
 
-// kv for storing deployement secrets
-module kv './modules/kv.bicep' = {
-  name: keyVaultName
-  params: {
-    kvName: keyVaultName
-    kvLocation: stackLocation
-    kvTags: stackTags
-  }
-
-}
-
 // log analytics workspace
 module law './modules/law.bicep' = {
   name: '${stackName}-law'
@@ -71,14 +58,7 @@ module law './modules/law.bicep' = {
     lawTags: stackTags
     lawLocation: stackLocation
     lawName: '${stackName}-law'
-    kvName: keyVaultName
-    kvClientSharedKeySecretName: lawSharedKeySecretName
   }
-}
-
-// fetch the kv in order to get the Log Analytics Shared Key
-resource infraSecretsKV 'Microsoft.KeyVault/vaults@2019-09-01' existing = {
-  name: keyVaultName
 }
 
 // ACA env for the backend service
@@ -86,8 +66,7 @@ var caBackendName = '${stackName}-caenv-backend'
 module cabackend './modules/caenv.bicep' = {
   name: caBackendName
   params: {
-    caEnvLawClientId: law.outputs.outputLawClientId
-    caEnvLawSharedKey: infraSecretsKV.getSecret(lawSharedKeySecretName)
+    caEnvLawName:'${stackName}-law'
     caEnvName: caBackendName
     caEnvLocation: stackLocation
     caEnvPrivate: true
@@ -114,8 +93,7 @@ var caClientName = '${lowerStackName}-caenv-client'
 module caclient './modules/caenv.bicep' = {
   name: caClientName
   params: {
-    caEnvLawClientId: law.outputs.outputLawClientId
-    caEnvLawSharedKey: infraSecretsKV.getSecret(lawSharedKeySecretName)
+    caEnvLawName:'${stackName}-law'
     caEnvName: caClientName
     caEnvLocation: stackLocation
     caEnvPrivate: true
