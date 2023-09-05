@@ -1,0 +1,19 @@
+{
+    "name": "Ubuntu",
+      // Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+      "image": "mcr.microsoft.com/devcontainers/base:jammy",
+    "features": {
+      "azure-cli": "latest",
+      "ghcr.io/jlaundry/devcontainer-features/azure-functions-core-tools:1": {}
+    },
+    "postCreateCommand": "az bicep upgrade",
+    "customizations": {
+      // Configure properties specific to VS Code.
+      "vscode": {
+        // Add the IDs of extensions you want installed when the container is created.
+        "extensions": [
+          "ms-azuretools.vscode-bicep"
+        ]
+      }
+    }
+  }
